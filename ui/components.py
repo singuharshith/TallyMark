@@ -34,17 +34,17 @@ def render_answer(ans: Answer, idx: int, is_last: bool) -> str | None:
     pills = []
     if ans.grounding and ans.grounding[1]:
         m, t = ans.grounding
-        pills.append(f'<span class="pill {"ok" if m == t else "warn"}">{"✓" if m == t else "⚠"} {m}/{t} figures verified against query result</span>')
+        pills.append(f'<span class="pill {"ok" if m == t else "warn"}">{m}/{t} figures matched to query results</span>')
     if ans.attempts > 1:
-        pills.append(f'<span class="pill warn">auto-repaired SQL ({ans.attempts} attempts)</span>')
+        pills.append(f'<span class="pill warn">query corrected after {ans.attempts} attempts</span>')
     if ans.elapsed_ms:
         pills.append(f'<span class="pill">{ans.elapsed_ms / 1000:.1f}s</span>')
     if pills and not ans.error:
         st.markdown("".join(pills), unsafe_allow_html=True)
     if ans.sql or ans.reasoning or ans.assumptions:
-        with st.expander("Analysis details (reasoning, SQL, Pandas)"):
+        with st.expander("How this was calculated"):
             if ans.reasoning:
-                st.markdown(f"**Reasoning:** {ans.reasoning}")
+                st.markdown(f"**Approach:** {ans.reasoning}")
             if ans.assumptions:
                 st.markdown("**Assumptions:**\n" + "\n".join(f"- {a}" for a in ans.assumptions))
             if ans.sql:

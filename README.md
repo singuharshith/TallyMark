@@ -1,8 +1,8 @@
 # Tallymark
 
-### Business data, in context.
+### CSV analysis, with the numbers to check.
 
-A browser-based business analysis workspace for exploring CSVs, understanding performance, and investigating unusual records. Every analytical answer is backed by a query you can inspect.
+A browser-based workspace for reviewing CSV data, checking trends and investigating unusual records. Natural-language answers include the SQL and result rows used for the calculation.
 
 Built for the *Digital Back Office - AI Engineer Assignment*.
 
@@ -16,16 +16,11 @@ Built for the *Digital Back Office - AI Engineer Assignment*.
 
 The deliverable is a **web application**, as requested in the assignment. Streamlit serves the website and connects its interface directly to the Python analysis modules; a separate frontend or backend service is not required. Deployment is optional when submitting the requested demo video.
 
-## How an analysis works
+## How a question is answered
 
-1. **Plan** — The language model receives the uploaded data schema and recent conversation, then returns a structured query plan.
-2. **Validate** — `core/sql_guard.py` parses the query and restricts it to a single read-only `SELECT` over uploaded tables.
-3. **Calculate** — DuckDB executes the validated query on in-memory data with external access disabled and a query timeout. Failed queries can be repaired up to two times.
-4. **Explain** — The language model receives the actual result rows and is instructed not to invent figures.
-5. **Check** — `core/grounding.py` checks figures in the explanation against the query result.
-6. **Present** — The site displays the answer, a chart when appropriate, results, reasoning, assumptions, SQL, and illustrative Pandas.
+With a Groq API key configured, the application sends the table schema, question and recent conversation to the model, which proposes a SQL query. `core/sql_guard.py` checks that the query is a single read-only `SELECT` against the loaded tables. DuckDB runs it against the in-memory data with external access disabled and a query timeout; a failed query can be corrected and retried. The model then receives the query results to draft an explanation. The app checks numeric claims against those results and displays the query and rows so they can be reviewed.
 
-Arbitrary AI-generated Python is **never executed**.
+The model does not calculate the answer or run generated Python. The SQL result is the source of truth; displayed Pandas code is illustrative.
 
 ## Requirement coverage
 
@@ -71,7 +66,11 @@ docker compose up --build
 ```
 Create `.env` from `.env.example` first (PowerShell: `Copy-Item .env.example .env`) and set `GROQ_API_KEY`.
 
-> No API key? The app still runs: dataset overview, data-quality checks and anomaly detection are deterministic. Natural-language Q&A needs the key (you can also paste it in the sidebar).
+> No API key? Dataset summaries, charts, data-quality checks and anomaly detection still work. A Groq API key is needed for natural-language questions and AI-written summaries.
+
+## Sample data
+
+The bundled sales and customer records are synthetic. Sales amounts are in GBP. The data includes a deliberately reduced March sales volume, missing values, duplicate rows and four planted anomalies so the analysis can be tried without uploading business data. The figures and names do not represent real customers, a company or market.
 
 ## Try these questions (sample data)
 
@@ -79,7 +78,7 @@ Create `.env` from `.env.example` first (PowerShell: `Copy-Item .env.example .en
 - Show monthly sales trends.
 - Which products are underperforming?
 - What are the top five customers?  *(joins `sales` with `customers`)*
-- Why did revenue drop in March? *(the sample data has a deliberate March dip, concentrated in the East region)*
+- Why did revenue drop in March? *(the sample data includes a deliberate drop, concentrated in the East region)*
 - Now break that down by product. *(follow-up using context)*
 - Generate SQL for this analysis.
 - Detect anomalies in the dataset. *(4 planted anomalies: ORD-9001…9004)*
@@ -92,7 +91,7 @@ core/                  UI-independent analysis engine, called by the website
   agent.py             plan → validate → execute/repair → explain → verify
   anomalies.py charts.py insights.py grounding.py pandas_codegen.py report.py logging_utils.py
 ui/                    theme.css + components
-tests/                 43 passing tests (loader, SQL guard, executor, anomalies, agent w/ fake LLM, UI smoke test)
+tests/                 45 passing tests (loader, SQL guard, executor, anomalies, sample data, agent w/ fake LLM, UI smoke test)
 scripts/               generate_sample_data.py · evaluate.py · make_architecture.py
 sample_data/           sales.csv, customers.csv
 docs/                  architecture.png, screenshots, demo video
@@ -109,14 +108,15 @@ Ground truth for the evaluation is computed independently in pandas.
 - Read-only, single-statement SQL, AST-validated against an allow-list of tables; DuckDB external access disabled.
 - API key comes from env or sidebar; never written to disk or logs.
 - Friendly errors for bad CSVs, missing key, bad SQL, empty results, LLM outages; unexpected exceptions are logged, not shown.
-- Every request is logged to `logs/tallymark_activity.jsonl` (question, intent, SQL, attempts, latency).
+- Questions and SQL statements are logged locally to `logs/tallymark_activity.jsonl`, alongside intent, attempts and timing. Logs are excluded from Git.
 
 ## Assumptions & notes
 - Column names are normalised to snake_case so the LLM and SQL stay consistent.
 - "Underperforming" = lowest by the main metric; the definition is shown under *Assumptions* for each answer.
 - Anomalies use statistical thresholds (default 3σ / 3×IQR / Isolation Forest 1%) adjustable in **Data quality**; a flagged value is a lead to investigate, not proof of an error.
 - The Pandas snippet is generated by the LLM for readability and is **not executed**; the SQL is the source of truth.
-- Data and conversation history are held in the Streamlit session and are not persisted between sessions.
+- With Groq enabled, the table schema, question, recent conversation and query results are sent to Groq for analysis.
+- Uploaded data and chat answers are held in the Streamlit session; the application does not persist the CSV contents. Questions and SQL are persisted in the local activity log described above. Avoid using sensitive data.
 
 ## Screenshots
 Captured with the bundled sample datasets. The data-quality screenshot shows flagged records without an API key.

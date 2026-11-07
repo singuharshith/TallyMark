@@ -23,7 +23,7 @@ from core.sql_guard import SQLGuardError, validate_sql
 from ui.components import inject_theme, kpi_row, render_answer, suggested_questions
 
 ROOT = Path(__file__).parent
-st.set_page_config(page_title="Tallymark | Business Intelligence", page_icon="TM", layout="wide")
+st.set_page_config(page_title="Tallymark | CSV Analysis", page_icon="TM", layout="wide")
 inject_theme()
 
 # ------------------------------------------------------------------ state
@@ -61,7 +61,7 @@ def cached(key, fn):
 with st.sidebar:
     st.markdown(
         '<div class="brand-lockup"><span class="brand-mark">T</span>'
-        '<div><p class="brand">Tallymark</p><p class="tagline">Business data, in context.</p></div></div>',
+        '<div><p class="brand">Tallymark</p><p class="tagline">CSV analysis, with the numbers to check.</p></div></div>',
         unsafe_allow_html=True,
     )
     env_key = os.getenv("GROQ_API_KEY", "")
@@ -72,10 +72,13 @@ with st.sidebar:
         )
         model = st.text_input("Model", value=GROQ_MODEL)
     llm = GroqLLM(key, model)
-    st.caption(
-        "Question answering is available."
-        if llm.available else "Add a Groq API key to ask questions in plain language."
-    )
+    if llm.available:
+        st.caption(
+            "Questions send the schema, recent conversation and query results to Groq. "
+            "Question text and SQL are logged locally."
+        )
+    else:
+        st.caption("Add a Groq API key to ask questions in plain language.")
     st.divider()
     files = st.file_uploader("Upload CSV files", type=["csv", "tsv", "txt"], accept_multiple_files=True)
     for f in files or []:
@@ -106,16 +109,16 @@ with st.sidebar:
 # ------------------------------------------------------------------ landing
 if not S.tables:
     st.markdown(
-        '<div class="hero"><span class="eyebrow">DATA ANALYSIS WORKSPACE</span>'
-        '<h1>A clearer view of your business data.</h1>'
-        '<p>Explore your CSV files, track performance, investigate unusual records, and get answers '
-        'grounded in calculations from your data.</p></div>',
+        '<div class="hero"><span class="eyebrow">CSV ANALYSIS</span>'
+        '<h1>Upload a file. Follow the numbers.</h1>'
+        '<p>Review key measures, trends and unusual records, then ask a question in plain language. '
+        'Each answer includes the SQL and result rows used to calculate it.</p></div>',
         unsafe_allow_html=True,
     )
     c1, c2, c3 = st.columns(3)
-    c1.markdown("**01 · Import**\n\nUpload one or more CSV files. Data is checked and prepared for analysis.")
-    c2.markdown("**02 · Explore**\n\nReview key measures, trends, data quality, and unusual records.")
-    c3.markdown("**03 · Investigate**\n\nAsk questions in plain language and inspect the SQL behind each result.")
+    c1.markdown("**Load a file**\n\nUpload a CSV. Columns, dates and values are checked on import.")
+    c2.markdown("**Review the data**\n\nStart with totals, trends, missing values and unusual records.")
+    c3.markdown("**Check an answer**\n\nAsk a question, then inspect the SQL and rows behind the result.")
     st.info("Upload CSV files in the sidebar, or load the sample datasets to explore the workspace.")
     st.stop()
 

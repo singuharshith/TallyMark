@@ -14,14 +14,16 @@ OUT.mkdir(exist_ok=True)
 regions = ["North", "South", "East", "West"]
 region_w = [0.22, 0.20, 0.30, 0.28]
 products = {  # name: (category, unit_price, popularity)
-    "Laptop Pro": ("Electronics", 1200, 0.10), "Smartphone X": ("Electronics", 800, 0.16),
+    "Laptop (14-inch)": ("Electronics", 1200, 0.10), "Android phone (128 GB)": ("Electronics", 800, 0.16),
     "Wireless Earbuds": ("Accessories", 120, 0.20), "Office Chair": ("Furniture", 260, 0.12),
-    "Standing Desk": ("Furniture", 540, 0.07), "USB-C Hub": ("Accessories", 45, 0.18),
-    "Smart Watch": ("Electronics", 300, 0.13), "Desk Lamp": ("Furniture", 35, 0.04),
+    "Height-adjustable desk": ("Furniture", 540, 0.07), "USB-C Dock": ("Accessories", 45, 0.18),
+    "Smartwatch": ("Electronics", 300, 0.13), "LED Desk Lamp": ("Furniture", 35, 0.04),
 }
+first_names = ["Aisha", "Amelia", "Arjun", "Daniel", "Freya", "George", "Niamh", "Oliver", "Priya", "Sam"]
+last_names = ["Bennett", "Clarke", "Hughes", "Khan", "Morgan", "Patel", "Shah", "Wright"]
 customers = pd.DataFrame({
     "customer_id": [f"C{1000 + i}" for i in range(80)],
-    "customer_name": [f"Customer {i + 1:02d}" for i in range(80)],
+    "customer_name": [f"{first} {last}" for first in first_names for last in last_names],
     "segment": rng.choice(["Enterprise", "SMB", "Consumer"], 80, p=[0.2, 0.4, 0.4]),
     "country": rng.choice(["UK", "India", "Germany", "USA"], 80, p=[0.3, 0.25, 0.2, 0.25]),
     "signup_date": pd.to_datetime("2022-01-01") + pd.to_timedelta(rng.integers(0, 700, 80), unit="D"),
@@ -34,7 +36,7 @@ oid = 1
 for month in range(1, 13):
     base = 130
     if month == 3:
-        base = 70  # the March dip - mostly East & Smart Watch / Laptop demand collapsing
+        base = 70  # A deliberate March drop, concentrated in the East.
     n = int(base + rng.integers(-8, 9))
     for _ in range(n):
         region = rng.choice(regions, p=region_w)
@@ -56,13 +58,13 @@ sales = pd.DataFrame(rows)
 
 # ---- planted anomalies (documented in README / used by tests) ----
 extra = pd.DataFrame([
-    {"order_id": "ORD-9001", "order_date": "2024-09-14", "region": "West", "product": "Laptop Pro", "category": "Electronics",
+    {"order_id": "ORD-9001", "order_date": "2024-09-14", "region": "West", "product": "Laptop (14-inch)", "category": "Electronics",
      "customer_id": "C1003", "quantity": 40, "unit_price": 1200, "discount": 0.0, "revenue": 48000.0},   # bulk/typo
-    {"order_id": "ORD-9002", "order_date": "2024-08-02", "region": "North", "product": "Desk Lamp", "category": "Furniture",
+    {"order_id": "ORD-9002", "order_date": "2024-08-02", "region": "North", "product": "LED Desk Lamp", "category": "Furniture",
      "customer_id": "C1010", "quantity": 2, "unit_price": 35, "discount": 0.0, "revenue": -70.0},          # negative revenue
-    {"order_id": "ORD-9003", "order_date": "2024-10-21", "region": "East", "product": "USB-C Hub", "category": "Accessories",
+    {"order_id": "ORD-9003", "order_date": "2024-10-21", "region": "East", "product": "USB-C Dock", "category": "Accessories",
      "customer_id": "C1022", "quantity": 250, "unit_price": 45, "discount": 0.0, "revenue": 11250.0},      # suspicious quantity
-    {"order_id": "ORD-9004", "order_date": "2024-11-09", "region": "South", "product": "Smartphone X", "category": "Electronics",
+    {"order_id": "ORD-9004", "order_date": "2024-11-09", "region": "South", "product": "Android phone (128 GB)", "category": "Electronics",
      "customer_id": "C1031", "quantity": 3, "unit_price": 800, "discount": 0.9, "revenue": 240.0},         # 90% discount
 ])
 sales = pd.concat([sales, extra], ignore_index=True)
