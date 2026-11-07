@@ -1,0 +1,11 @@
+services:
+  tallymark:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - GROQ_MODEL=${GROQ_MODEL:-llama-3.3-70b-versatile}
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
