@@ -9,6 +9,7 @@ A browser-based workspace for reviewing CSV data, checking trends and investigat
 | Resource | Included |
 |---|---|
 | Complete source code | Application and analysis modules in this repository |
+| Live application | [Open Tallymark](https://tallymark-y5wdfqgwdbypzw2dionjzv.streamlit.app/) |
 | Setup instructions | [Quick start](#quick-start) |
 | Architecture diagram | [Application architecture](docs/architecture.png) |
 | Screenshots | [Overview](docs/screenshots/overview.png) · [Data quality](docs/screenshots/detective.png) |
@@ -62,7 +63,7 @@ cp .env.example .env
 # Edit .env and set GROQ_API_KEY (free at console.groq.com)
 streamlit run app.py
 ```
-Open http://localhost:8501 → click **Load sample datasets** → try the suggested questions.
+Open the URL printed in the terminal, then click **Load sample datasets** to try the suggested questions.
 
 ### Option B - Docker
 ```bash
