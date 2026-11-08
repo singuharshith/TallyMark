@@ -13,7 +13,7 @@ A browser-based workspace for reviewing CSV data, checking trends and investigat
 | Setup instructions | [Quick start](#quick-start) |
 | Architecture diagram | [Application architecture](docs/architecture.png) |
 | Screenshots | [Overview](docs/screenshots/overview.png) · [Data quality](docs/screenshots/detective.png) |
-| Demo video | [Watch the Tallymark walkthrough](docs/demo.mp4) |
+| Demo video | [View/download from Google Drive](https://drive.google.com/file/d/10DVe2_pcXFY_lZAsxiw244gjhfQfeuXL/view?usp=drive_link) · [Download from this repository](docs/demo.mp4) |
 | Docker support | `Dockerfile` and `docker-compose.yml` |
 | Sample datasets | [Sales](sample_data/sales.csv) · [Customers](sample_data/customers.csv) |
 
