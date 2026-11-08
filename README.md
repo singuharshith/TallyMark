@@ -4,17 +4,21 @@
 
 A browser-based workspace for reviewing CSV data, checking trends and investigating unusual records. Natural-language answers include the SQL and result rows used for the calculation.
 
-Built for the *Digital Back Office - AI Engineer Assignment*.
+## Project contents
 
-| | |
+| Resource | Included |
 |---|---|
-| **GitHub repository** | [singuharshith/TallyMark](https://github.com/singuharshith/TallyMark) |
-| **Demo video** | _Add the 10–30 second recording here or save it as `docs/demo.mp4`_ |
-| **Local website** | Run the setup below; no online deployment is required |
+| Complete source code | Application and analysis modules in this repository |
+| Setup instructions | [Quick start](#quick-start) |
+| Architecture diagram | [Application architecture](docs/architecture.png) |
+| Screenshots | [Overview](docs/screenshots/overview.png) · [Data quality](docs/screenshots/detective.png) |
+| Demo video or live app | Add a short demo video or public app link here when available; the app runs locally using the setup below |
+| Docker support | `Dockerfile` and `docker-compose.yml` |
+| Sample datasets | [Sales](sample_data/sales.csv) · [Customers](sample_data/customers.csv) |
 
 ![Tallymark application architecture](docs/architecture.png)
 
-The deliverable is a **web application**, as requested in the assignment. Streamlit serves the website and connects its interface directly to the Python analysis modules; a separate frontend or backend service is not required. Deployment is optional when submitting the requested demo video.
+Streamlit serves the website and connects its interface directly to the Python analysis modules.
 
 ## How a question is answered
 
@@ -22,9 +26,9 @@ With a Groq API key configured, the application sends the table schema, question
 
 The model does not calculate the answer or run generated Python. The SQL result is the source of truth; displayed Pandas code is illustrative.
 
-## Requirement coverage
+## Features
 
-| Assignment requirement | Where |
+| Feature | Implementation |
 |---|---|
 | Upload & validate one or more CSVs | `core/loader.py` - encoding + delimiter sniffing, empty/size/type checks, column normalisation, currency/date coercion, per-file error messages |
 | Natural-language questions | `core/agent.py` + `core/prompts.py` (optional Groq API key) |
@@ -34,7 +38,7 @@ The model does not calculate the answer or run generated Python. The SQL result 
 | Anomaly detection with explanations | `core/anomalies.py` - z-score, IQR, sign check, Isolation Forest; every row has a plain-English `why_flagged` |
 | Explain reasoning | reasoning + assumptions + grounding badge in each answer |
 | Conversation context | last 4 turns + previous SQL passed to the planner ("now break that down by month") |
-| **Bonus** | multi-file joins · data-quality score · dashboard · report export (MD/HTML) · logging/observability · evaluation script · Docker · tests |
+| **Additional capabilities** | multi-file joins · data-quality score · dashboard · report export (MD/HTML) · logging/observability · evaluation script · Docker · tests |
 
 ## Quick start
 
@@ -96,13 +100,13 @@ ui/                    theme.css + components
 tests/                 46 passing tests (loader, SQL guard, executor, anomalies, sample data, LLM errors, agent w/ fake LLM, UI smoke test)
 scripts/               generate_sample_data.py · evaluate.py · make_architecture.py
 sample_data/           sales.csv, customers.csv
-docs/                  architecture.png, screenshots, demo video
+docs/                  architecture.png, screenshots
 ```
 
 ## Testing & evaluation
 ```bash
 pytest -q                          # unit + pipeline tests (no network needed)
-GROQ_API_KEY=... python scripts/evaluate.py   # runs the assignment's example questions with the real LLM
+GROQ_API_KEY=... python scripts/evaluate.py   # evaluates example questions with the real LLM
 ```
 Ground truth for the evaluation is computed independently in pandas.
 

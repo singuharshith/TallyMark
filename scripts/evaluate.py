@@ -1,4 +1,4 @@
-"""Evaluation framework: runs the assignment's example questions against the sample data with the real LLM
+"""Evaluation framework: runs example questions against the sample data with the real LLM
 and checks answers against ground truth computed independently in pandas.
 
 Usage:  GROQ_API_KEY=... python scripts/evaluate.py
