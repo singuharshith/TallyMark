@@ -12,7 +12,7 @@ A browser-based workspace for reviewing CSV data, checking trends and investigat
 | Setup instructions | [Quick start](#quick-start) |
 | Architecture diagram | [Application architecture](docs/architecture.png) |
 | Screenshots | [Overview](docs/screenshots/overview.png) · [Data quality](docs/screenshots/detective.png) |
-| Demo video or live app | Add a short demo video or public app link here when available; the app runs locally using the setup below |
+| Demo video | [Watch the Tallymark walkthrough](docs/demo.mp4) |
 | Docker support | `Dockerfile` and `docker-compose.yml` |
 | Sample datasets | [Sales](sample_data/sales.csv) · [Customers](sample_data/customers.csv) |
 
@@ -100,7 +100,7 @@ ui/                    theme.css + components
 tests/                 46 passing tests (loader, SQL guard, executor, anomalies, sample data, LLM errors, agent w/ fake LLM, UI smoke test)
 scripts/               generate_sample_data.py · evaluate.py · make_architecture.py
 sample_data/           sales.csv, customers.csv
-docs/                  architecture.png, screenshots
+docs/                  architecture.png, screenshots, demo.mp4
 ```
 
 ## Testing & evaluation
