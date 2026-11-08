@@ -68,6 +68,8 @@ Create `.env` from `.env.example` first (PowerShell: `Copy-Item .env.example .en
 
 > No API key? Dataset summaries, charts, data-quality checks and anomaly detection still work. A Groq API key is needed for natural-language questions and AI-written summaries.
 
+The default Groq model is `openai/gpt-oss-120b`. If Groq reports that a model is unavailable to your account, choose an enabled model under **Language model settings** or set `GROQ_MODEL` in `.env`. Groq's [model deprecations](https://console.groq.com/docs/deprecations) list replacements as models change.
+
 ## Sample data
 
 The bundled sales and customer records are synthetic. Sales amounts are in GBP. The data includes a deliberately reduced March sales volume, missing values, duplicate rows and four planted anomalies so the analysis can be tried without uploading business data. The figures and names do not represent real customers, a company or market.
@@ -91,7 +93,7 @@ core/                  UI-independent analysis engine, called by the website
   agent.py             plan → validate → execute/repair → explain → verify
   anomalies.py charts.py insights.py grounding.py pandas_codegen.py report.py logging_utils.py
 ui/                    theme.css + components
-tests/                 45 passing tests (loader, SQL guard, executor, anomalies, sample data, agent w/ fake LLM, UI smoke test)
+tests/                 46 passing tests (loader, SQL guard, executor, anomalies, sample data, LLM errors, agent w/ fake LLM, UI smoke test)
 scripts/               generate_sample_data.py · evaluate.py · make_architecture.py
 sample_data/           sales.csv, customers.csv
 docs/                  architecture.png, screenshots, demo video

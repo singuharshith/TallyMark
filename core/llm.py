@@ -73,6 +73,15 @@ class GroqLLM:
                 msg = str(exc).lower()
                 if "401" in msg or "invalid api key" in msg or "authentication" in msg:
                     raise LLMError("The Groq API key was rejected. Check GROQ_API_KEY.")
+                status_code = getattr(exc, "status_code", None)
+                if (status_code == 404 or "404" in msg) and any(
+                    term in msg for term in ("model", "does not exist", "do not have access")
+                ):
+                    raise LLMError(
+                        f"Groq could not find or grant access to model '{self.model}'. "
+                        "Choose a model available to your account under Language model settings. "
+                        "The current recommended default is 'openai/gpt-oss-120b'."
+                    ) from exc
                 logger.warning("LLM call failed (attempt %s): %s", attempt + 1, exc)
             time.sleep(1.5 * (attempt + 1))
         raise LLMError(f"The AI service is unavailable right now ({str(last)[:120]}). Please try again.")

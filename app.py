@@ -70,7 +70,12 @@ with st.sidebar:
             "Groq API key", type="password",
             help="Used for natural-language analysis. The key is kept in this session only.",
         )
-        model = st.text_input("Model", value=GROQ_MODEL)
+        model = st.text_input(
+            "Model",
+            value=GROQ_MODEL,
+            key="groq_model",
+            help="Use a model ID available to your Groq account. The default supports JSON responses.",
+        )
     llm = GroqLLM(key, model)
     if llm.available:
         st.caption(
